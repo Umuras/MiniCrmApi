@@ -416,3 +416,40 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build output
+bin/
+obj/
+
+# ASP.NET Core secrets
+appsettings.Development.json
+appsettings.*.json
+secrets.json
+appsettings.json
+
+# LaunchSettings (yerel profil ayarları)
+Properties/launchSettings.json
+
+# Rider, VS Code
+.idea/
+.vscode/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
