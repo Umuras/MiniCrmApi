@@ -1,5 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using MiniCrmApi.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
+//Burada DI (Dependency Injection) ile DbContext servisini kayýt ettik.
+builder.Services.AddDbContext<MiniCrmContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Add services to the container.
 
 builder.Services.AddControllers();

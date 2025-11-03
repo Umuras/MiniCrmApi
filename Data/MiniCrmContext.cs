@@ -143,7 +143,8 @@ namespace MiniCrmApi.Data
                       .HasKey(od => od.Id);
 
                 entity.Property(od => od.Price)
-                      .IsRequired();
+                      .IsRequired()
+                      .HasColumnType("decimal(18,2)");
 
                 entity.HasOne(od => od.Product)
                       .WithMany(p => p.OrderDetails)
