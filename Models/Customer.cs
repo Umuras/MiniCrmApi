@@ -8,6 +8,8 @@
         public string City { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
 
+        //Bir müşteri birden fazla sipariş verebilir. OneToMany
+        //Many tarafta foreign key, One tarafta liste.
         public List<Order> Orders { get; set; } = new List<Order>();
     }
 }
