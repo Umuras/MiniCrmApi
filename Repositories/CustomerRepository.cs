@@ -61,22 +61,11 @@ namespace MiniCrmApi.Repositories
             await _context.SaveChangesAsync();
         }
 
-        // Id’ye gore Customer kaydini siler.
-        public async Task DeleteAsync(int id)
+        // Customer kaydini siler.
+        public async Task DeleteAsync(Customer customer)
         {
-            // FindAsync() -> Primary Key’e göre arama yapar (bu durumda Id).
-            Customer? customer = await _context.Customers.FindAsync(id);
-
-            // Eğer kayıt varsa silme işlemini yapar.
-            if (customer != null)
-            {
-                _context.Customers.Remove(customer);
-                await _context.SaveChangesAsync();
-            } // Eger kayıt bulunamazsa hata fırlatir.
-            else
-            {
-                throw new Exception("There isn't customer belong to this id");
-            }
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
         }  
     }
 }

@@ -8,6 +8,6 @@ namespace MiniCrmApi.Repositories
         Task<Customer> GetByIdAsync(int id);
         Task AddAsync(Customer customer);
         Task UpdateAsync(Customer customer);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(Customer customer);
     }
 }
