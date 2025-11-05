@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniCrmApi.Data;
 
@@ -10,9 +11,11 @@ using MiniCrmApi.Data;
 namespace MiniCrmApi.Migrations
 {
     [DbContext(typeof(MiniCrmContext))]
-    partial class MiniCrmContextModelSnapshot : ModelSnapshot
+    [Migration("20251105091703_MakeDescriptionNullable")]
+    partial class MakeDescriptionNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
