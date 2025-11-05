@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MiniCrmApi.Data;
+using MiniCrmApi.Middlewares;
 using MiniCrmApi.Repositories;
 using MiniCrmApi.Services;
 
@@ -26,6 +27,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Global hata yakalama middleware’i
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
