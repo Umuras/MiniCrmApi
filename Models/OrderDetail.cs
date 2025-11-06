@@ -1,8 +1,14 @@
-﻿namespace MiniCrmApi.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MiniCrmApi.Models
 {
     public class OrderDetail
     {
+        [Key]
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "Price is required.")]
+        [MinLength(1, ErrorMessage = "Price cannot be 0.")]
         public decimal Price { get; set; }
 
         //Foreign Key
