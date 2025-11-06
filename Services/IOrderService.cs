@@ -9,5 +9,6 @@ namespace MiniCrmApi.Services
         Task AddAsync(Order order);
         Task UpdateAsync(int id, Order order);
         Task DeleteAsync(int id);
+        Task UpdateOrderTotalPriceAsync(int orderId);
     }
 }

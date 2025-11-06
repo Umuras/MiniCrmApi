@@ -125,6 +125,10 @@ namespace MiniCrmApi.Data
                 entity.Property(o => o.Description)
                       .HasMaxLength(50);
 
+                entity.Property(o => o.TotalPrice)
+                      .IsRequired()
+                      .HasColumnType("decimal(18,2)");
+
                 entity.HasOne(o => o.Customer)
                       .WithMany(o => o.Orders)
                       .HasForeignKey(o => o.CustomerId);

@@ -15,6 +15,8 @@ namespace MiniCrmApi.Models
         [StringLength(100, MinimumLength = 10, ErrorMessage = "Description must be between 10 and 100 characters.")]
         public string? Description { get; set; }
 
+        public decimal TotalPrice { get; set; }
+
         //Foreign Key
         public int CustomerId { get; set; }
 
@@ -23,8 +25,5 @@ namespace MiniCrmApi.Models
 
         public List<OrderDetail> OrderDetails { get; set; } = new();
 
-        //Order tablosunda Price kolonu oluşmasın diye yazıyoruz.
-        [NotMapped]
-        public decimal Price => OrderDetails.Sum(d => d.Price);
     }
 }

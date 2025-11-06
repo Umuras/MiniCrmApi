@@ -67,5 +67,18 @@ namespace MiniCrmApi.Services
             await orderRepository.DeleteAsync(order);
         }
 
+        public async Task UpdateOrderTotalPriceAsync(int orderId)
+        {
+            Order order = await orderRepository.GetOrderWithDetailsAsync(orderId);
+
+            if(order == null)
+            {
+                throw new KeyNotFoundException($"There isn't order belong this id:{orderId}");
+            }
+
+            order.TotalPrice = order.OrderDetails.Sum(o => o.Price);
+
+            await orderRepository.UpdateAsync(order);
+        }
     }
 }

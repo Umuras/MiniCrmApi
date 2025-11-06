@@ -9,5 +9,6 @@ namespace MiniCrmApi.Repositories
         Task AddAsync(Order order);
         Task UpdateAsync(Order order);
         Task DeleteAsync(Order order);
+        Task<Order> GetOrderWithDetailsAsync(int orderId);
     }
 }

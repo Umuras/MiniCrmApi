@@ -15,7 +15,7 @@ namespace MiniCrmApi.Repositories
 
         public async Task<List<Order>> GetAllAsync()
         {
-            List<Order> orderList = await context.Orders.ToListAsync<Order>();
+            List<Order> orderList = await context.Orders.Include(o => o.OrderDetails).ToListAsync<Order>();
             return orderList;
         }
 
@@ -41,6 +41,12 @@ namespace MiniCrmApi.Repositories
         {
             context.Orders.Remove(order);
             await context.SaveChangesAsync();
+        }
+
+        public async Task<Order> GetOrderWithDetailsAsync(int orderId)
+        {
+            Order? order = await context.Orders.Include(o => o.OrderDetails).FirstOrDefaultAsync(x => x.Id == orderId);
+            return order;
         }
     }
 }
