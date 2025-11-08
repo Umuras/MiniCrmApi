@@ -41,6 +41,49 @@ namespace MiniCrmApi.Data
             //Category TABLOSU
 
             ConfigureCategory(modelBuilder);
+
+            //Category Seed Data
+            modelBuilder.Entity<Category>().HasData(
+                new Category { Id = 1, Name = "Electronics" },
+                new Category { Id = 2, Name = "Books" },
+                new Category { Id = 3, Name = "Clothing" },
+                new Category { Id = 4, Name = "Home & Kitchen" },
+                new Category { Id = 5, Name = "Toys & Games" }
+                );
+
+            //Product Seed Data
+            modelBuilder.Entity<Product>().HasData(
+                // Electronics
+                new Product { Id = 1, Name = "Laptop", Price = 10000, StockQuantity = 10, CategoryId = 1 },
+                new Product { Id = 2, Name = "Smartphone", Price = 7000, StockQuantity = 15, CategoryId = 1 },
+                new Product { Id = 3, Name = "Wireless Headphones", Price = 1500, StockQuantity = 25, CategoryId = 1 },
+
+                // Books
+                new Product { Id = 4, Name = "C# Programming Book", Price = 200, StockQuantity = 50, CategoryId = 2 },
+                new Product { Id = 5, Name = "Design Patterns Book", Price = 180, StockQuantity = 40, CategoryId = 2 },
+                new Product { Id = 6, Name = "Database Systems Book", Price = 220, StockQuantity = 30, CategoryId = 2 },
+
+                // Clothing
+                new Product { Id = 7, Name = "T-Shirt", Price = 100, StockQuantity = 100, CategoryId = 3 },
+                new Product { Id = 8, Name = "Jeans", Price = 250, StockQuantity = 60, CategoryId = 3 },
+                new Product { Id = 9, Name = "Jacket", Price = 500, StockQuantity = 40, CategoryId = 3 },
+
+                // Home & Kitchen
+                new Product { Id = 10, Name = "Coffee Maker", Price = 600, StockQuantity = 20, CategoryId = 4 },
+                new Product { Id = 11, Name = "Microwave Oven", Price = 1200, StockQuantity = 15, CategoryId = 4 },
+                new Product { Id = 12, Name = "Blender", Price = 400, StockQuantity = 25, CategoryId = 4 },
+
+                // Toys & Games
+                new Product { Id = 13, Name = "Board Game", Price = 300, StockQuantity = 50, CategoryId = 5 },
+                new Product { Id = 14, Name = "Puzzle", Price = 150, StockQuantity = 70, CategoryId = 5 },
+                new Product { Id = 15, Name = "RC Car", Price = 800, StockQuantity = 30, CategoryId = 5 }
+                );
+
+            //Customer Seed Data
+            modelBuilder.Entity<Customer>().HasData(
+                new Customer { Id = 1, Name = "Ali Umur", City = "Istanbul", Address = "Istanbul", PhoneNumber = "99999999999" },
+                new Customer { Id = 2, Name = "Mustafa Asim", City = "Istanbul", Address = "Istanbul", PhoneNumber = "88888888888" }
+                );
         }
 
         private void ConfigureCustomer(ModelBuilder modelBuilder)
