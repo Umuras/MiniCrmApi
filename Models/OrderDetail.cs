@@ -7,9 +7,9 @@ namespace MiniCrmApi.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Price is required.")]
-        [MinLength(1, ErrorMessage = "Price cannot be 0.")]
         public decimal Price { get; set; }
+
+        public int Quantity { get; set; }
 
         //Foreign Key
         public int OrderId { get; set; }

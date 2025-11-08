@@ -1,15 +1,25 @@
-﻿using MiniCrmApi.Models;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using MiniCrmApi.Data;
+using MiniCrmApi.Dtos;
+using MiniCrmApi.Models;
 using MiniCrmApi.Repositories;
 
 namespace MiniCrmApi.Services
 {
     public class OrderService : IOrderService
     {
+        private MiniCrmContext context;
         private IOrderRepository orderRepository;
+        private ICustomerService customerService;
+        private IProductService productService;
 
-        public OrderService(IOrderRepository orderRepository)
+        public OrderService(IOrderRepository orderRepository, ICustomerService customerService, 
+            IProductService productService, MiniCrmContext context)
         {
             this.orderRepository = orderRepository;
+            this.customerService = customerService;
+            this.productService = productService;
+            this.context = context;
         }
 
         public async Task<List<Order>> GetAllAsync()
@@ -30,14 +40,45 @@ namespace MiniCrmApi.Services
             return order;
         }
 
-        public async Task AddAsync(Order order)
+        public async Task AddAsync(CreateOrderDto orderDto)
         {
-            if(order == null)
+            Order order = new Order();
+            
+            Customer customer = await customerService.GetByIdAsync(orderDto.CustomerId);
+            order.CustomerId = customer.Id;
+
+            foreach (CreateOrderDetailDto detail in orderDto.OrderDetails)
             {
-                throw new ArgumentNullException(nameof(order), "Order cannot be null");
+                
+                Product product = await productService.GetProductByIdAsync(detail.ProductId);
+                order.TotalPrice += detail.Quantity * product.Price;
+                order.TotalQuantity += detail.Quantity;
+
+                OrderDetail orderDetail = new OrderDetail()
+                {
+                    Product = product,
+                    ProductId = detail.ProductId,
+                    Price = detail.Quantity * product.Price,
+                    Quantity = detail.Quantity
+                };
+  
+                order.OrderDetails.Add(orderDetail);
             }
 
-            await orderRepository.AddAsync(order);
+            // Transaction başlat
+            using IDbContextTransaction transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                await orderRepository.AddAsync(order); // Order ve OrderDetails eklenir
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync(); // Her şey başarılı ise commit edecek.
+            }
+            catch
+            {
+                await transaction.RollbackAsync(); // Hata olursa rollback yapacak.
+                throw; // ExceptionMiddleware yakalayacak
+            }
         }
 
         public async Task UpdateAsync(int id, Order order)
@@ -48,15 +89,6 @@ namespace MiniCrmApi.Services
             }
 
             Order dbOrder = await GetByIdAsync(id);
-
-            if (order.Name != null)
-            {
-                dbOrder.Name = order.Name;
-            }
-            if (order.Description != null)
-            {
-                dbOrder.Description = order.Description;
-            }
             
             await orderRepository.UpdateAsync(dbOrder);
         }
@@ -76,7 +108,8 @@ namespace MiniCrmApi.Services
                 throw new KeyNotFoundException($"There isn't order belong this id:{orderId}");
             }
 
-            order.TotalPrice = order.OrderDetails.Sum(o => o.Price);
+            //Quantity propertysi eklenmeli bir orderda üründen kaç tane sipariş etmiş.
+            order.TotalPrice = order.OrderDetails.Sum(o => o.Price * o.Order.TotalQuantity);
 
             await orderRepository.UpdateAsync(order);
         }

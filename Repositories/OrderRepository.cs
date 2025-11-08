@@ -28,7 +28,6 @@ namespace MiniCrmApi.Repositories
         public async Task AddAsync(Order order)
         {
             context.Orders.Add(order);
-            await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Order order)

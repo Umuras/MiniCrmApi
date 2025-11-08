@@ -1,4 +1,5 @@
-﻿using MiniCrmApi.Models;
+﻿using MiniCrmApi.Dtos;
+using MiniCrmApi.Models;
 
 namespace MiniCrmApi.Services
 {
@@ -6,7 +7,7 @@ namespace MiniCrmApi.Services
     {
         Task<List<Order>> GetAllAsync();
         Task<Order> GetByIdAsync(int id);
-        Task AddAsync(Order order);
+        Task AddAsync(CreateOrderDto order);
         Task UpdateAsync(int id, Order order);
         Task DeleteAsync(int id);
         Task UpdateOrderTotalPriceAsync(int orderId);

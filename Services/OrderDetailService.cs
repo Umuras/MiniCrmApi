@@ -83,7 +83,7 @@ namespace MiniCrmApi.Services
             OrderDetail orderDetail = await GetOrderDetailByIdAsync(id);
             await _orderDetailRepository.DeleteOrderDetailAsync(orderDetail);
 
-            await _orderService.UpdateOrderTotalPriceAsync(orderDetail.Id);
+            await _orderService.UpdateOrderTotalPriceAsync(orderDetail.OrderId);
         }
     }
 }

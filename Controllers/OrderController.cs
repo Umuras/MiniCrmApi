@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using MiniCrmApi.Dtos;
 using MiniCrmApi.Models;
 using MiniCrmApi.Services;
 
@@ -31,9 +32,9 @@ namespace MiniCrmApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddOrder([FromBody] Order order)
+        public async Task<IActionResult> AddOrder([FromBody] CreateOrderDto orderDto)
         {
-            await orderService.AddAsync(order);
+            await orderService.AddAsync(orderDto);
             /*
              * Bu satır, şu mesajı istemciye gönderiyor gibi düşünebilirsin:
                “Order başarıyla oluşturuldu ✅
@@ -58,7 +59,7 @@ namespace MiniCrmApi.Controllers
                Son parametre olan order ise response body’de JSON olarak döner (entitydeki tüm alanlarla birlikte).
              * 
              */
-            return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
+            return Created();
         }
 
         [HttpPut("{id}")]

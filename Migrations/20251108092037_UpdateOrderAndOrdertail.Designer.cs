@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniCrmApi.Data;
 
@@ -11,9 +12,11 @@ using MiniCrmApi.Data;
 namespace MiniCrmApi.Migrations
 {
     [DbContext(typeof(MiniCrmContext))]
-    partial class MiniCrmContextModelSnapshot : ModelSnapshot
+    [Migration("20251108092037_UpdateOrderAndOrdertail")]
+    partial class UpdateOrderAndOrdertail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,8 +93,8 @@ namespace MiniCrmApi.Migrations
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("TotalQuantity")
-                        .HasColumnType("int");
+                    b.Property<decimal>("TotalQuantity")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

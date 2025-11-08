@@ -118,16 +118,16 @@ namespace MiniCrmApi.Data
                 entity.ToTable("Order")
                       .HasKey(o => o.Id);
 
-                entity.Property(o => o.Name)
-                      .IsRequired()
-                      .HasMaxLength(30);
-
-                entity.Property(o => o.Description)
-                      .HasMaxLength(50);
-
                 entity.Property(o => o.TotalPrice)
                       .IsRequired()
                       .HasColumnType("decimal(18,2)");
+
+                entity.Property(o => o.TotalQuantity)
+                      .IsRequired()
+                      .HasColumnType("int");
+
+                entity.Property(o => o.CreatedDate)
+                      .IsRequired();
 
                 entity.HasOne(o => o.Customer)
                       .WithMany(o => o.Orders)
