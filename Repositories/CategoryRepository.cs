@@ -27,20 +27,19 @@ namespace MiniCrmApi.Repositories
 
         public async Task AddCategoryAsync(Category category)
         {
-            context.Categories.Add(category);
-            await context.SaveChangesAsync();
+           await context.Categories.AddAsync(category);
         }
 
-        public async Task UpdateCategoryAsync(Category category)
+        public Task UpdateCategoryAsync(Category category)
         {
             context.Categories.Update(category);
-            await context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
-        public async Task DeleteCategoryAsync(Category category)
+        public Task DeleteCategoryAsync(Category category)
         {
             context.Categories.Remove(category);
-            await context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
     }
 }

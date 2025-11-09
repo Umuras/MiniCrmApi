@@ -61,7 +61,7 @@ namespace MiniCrmApi.Controllers
 
             await categoryService.AddCategoryAsync(category);
 
-            return CreatedAtAction(nameof(GetCategoryById), new { Id = category.Id }, categoryDto);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, categoryDto);
         }
 
         [HttpPut("{id}")]
@@ -79,7 +79,7 @@ namespace MiniCrmApi.Controllers
 
             await categoryService.UpdateCategoryAsync(id, category);
 
-            return NoContent();
+            return Ok("Category updated successfully");
         }
 
         [HttpDelete("{id}")]
