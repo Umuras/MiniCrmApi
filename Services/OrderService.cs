@@ -51,6 +51,13 @@ namespace MiniCrmApi.Services
             {
                 
                 Product product = await productService.GetProductByIdAsync(detail.ProductId);
+                if(product.StockQuantity < detail.Quantity)
+                {
+                    throw new Exception($"There isn't enough product {product.Name} stock quantity, so you don't order this product {product.Name} for this quantity");
+                }
+
+                product.StockQuantity -= detail.Quantity;
+
                 order.TotalPrice += detail.Quantity * product.Price;
                 order.TotalQuantity += detail.Quantity;
 
