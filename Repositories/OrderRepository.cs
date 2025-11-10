@@ -21,25 +21,25 @@ namespace MiniCrmApi.Repositories
 
         public async Task<Order> GetByIdAsync(int id)
         {
-            Order? order = await context.Orders.FindAsync(id);
+            Order? order = await context.Orders.Include(o => o.OrderDetails).FirstOrDefaultAsync(x => x.Id == id);
             return order;
         }
 
         public async Task AddAsync(Order order)
         {
-            context.Orders.Add(order);
+            await context.Orders.AddAsync(order);
         }
 
-        public async Task UpdateAsync(Order order)
+        public Task UpdateAsync(Order order)
         {
             context.Orders.Update(order);
-            await context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
-        public async Task DeleteAsync(Order order)
+        public Task DeleteAsync(Order order)
         {
             context.Orders.Remove(order);
-            await context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
         public async Task<Order> GetOrderWithDetailsAsync(int orderId)

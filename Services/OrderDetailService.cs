@@ -1,4 +1,6 @@
-﻿using MiniCrmApi.Models;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using MiniCrmApi.Data;
+using MiniCrmApi.Models;
 using MiniCrmApi.Repositories;
 
 namespace MiniCrmApi.Services
@@ -8,12 +10,15 @@ namespace MiniCrmApi.Services
         private readonly IOrderDetailRepository _orderDetailRepository;
         private readonly IProductService _productService;
         private readonly IOrderService _orderService;
+        private readonly MiniCrmContext _context;
 
-        public OrderDetailService(IOrderDetailRepository orderDetailRepository, IProductService productService, IOrderService orderService)
+        public OrderDetailService(IOrderDetailRepository orderDetailRepository, IProductService productService,
+            IOrderService orderService, MiniCrmContext context)
         {
             _orderDetailRepository = orderDetailRepository;
             _productService = productService;
             _orderService = orderService;
+            _context = context;
         }
 
         public async Task<List<OrderDetail>> GetAllOrderDetailsAsync()
@@ -44,8 +49,22 @@ namespace MiniCrmApi.Services
             Product product = await _productService.GetProductByIdAsync(orderDetail.ProductId);
             orderDetail.Price = product.Price;
 
-            await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
-            await _orderService.UpdateOrderTotalPriceAsync(orderDetail.OrderId);
+            using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                await _orderDetailRepository.AddOrderDetailAsync(orderDetail);
+                await _orderService.UpdateOrderTotalPriceAndQuantityAsync(orderDetail.OrderId);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
+            
         }
 
         public async Task UpdateOrderDetailAsync(int id, OrderDetail orderDetail)
@@ -74,16 +93,42 @@ namespace MiniCrmApi.Services
                 dbOrderDetail.ProductId = orderDetail.ProductId;
             }
 
-            await _orderDetailRepository.UpdateOrderDetailAsync(dbOrderDetail);
-            await _orderService.UpdateOrderTotalPriceAsync(dbOrderDetail.OrderId);
+            using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                await _orderDetailRepository.UpdateOrderDetailAsync(dbOrderDetail);
+                await _orderService.UpdateOrderTotalPriceAndQuantityAsync(dbOrderDetail.OrderId);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
         }
 
         public async Task DeleteOrderDetailAsync(int id)
         {
             OrderDetail orderDetail = await GetOrderDetailByIdAsync(id);
-            await _orderDetailRepository.DeleteOrderDetailAsync(orderDetail);
 
-            await _orderService.UpdateOrderTotalPriceAsync(orderDetail.OrderId);
+            using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                await _orderDetailRepository.DeleteOrderDetailAsync(orderDetail);
+                await _orderService.UpdateOrderTotalPriceAndQuantityAsync(orderDetail.OrderId);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        
         }
     }
 }

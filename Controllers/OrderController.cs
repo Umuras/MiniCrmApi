@@ -21,20 +21,24 @@ namespace MiniCrmApi.Controllers
         public async Task<IActionResult> GetAllOrders()
         {
             List<Order> orderList = await orderService.GetAllAsync();
-            return Ok(orderList);
+            List<OrderResponseDto> orders = orderService.ChangeOrdersResponse(orderList);
+
+            return Ok(orders);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderById(int id)
         {
             Order order = await orderService.GetByIdAsync(id);
-            return Ok(order);
+            OrderResponseDto orderResponse = orderService.ChangeOrderResponse(order);
+            return Ok(orderResponse);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddOrder([FromBody] CreateOrderDto orderDto)
         {
-            await orderService.AddAsync(orderDto);
+            Order order = await orderService.AddAsync(orderDto);
+            OrderResponseDto orderResponse = orderService.ChangeOrderResponse(order);
             /*
              * Bu satır, şu mesajı istemciye gönderiyor gibi düşünebilirsin:
                “Order başarıyla oluşturuldu ✅
@@ -59,14 +63,14 @@ namespace MiniCrmApi.Controllers
                Son parametre olan order ise response body’de JSON olarak döner (entitydeki tüm alanlarla birlikte).
              * 
              */
-            return Created();
+            return CreatedAtAction(nameof(GetOrderById), new {id = orderResponse.Id}, orderResponse);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrder(int id, [FromBody] Order order)
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] UpdateOrderRequestDto orderRequest)
         {
-            await orderService.UpdateAsync(id, order);
-            return NoContent();
+            await orderService.UpdateAsync(id, orderRequest);
+            return Ok("OrderStatus updated successfully");
         }
 
         [HttpDelete("{id}")]

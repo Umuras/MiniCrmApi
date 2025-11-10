@@ -27,21 +27,20 @@ namespace MiniCrmApi.Repositories
 
         public async Task AddOrderDetailAsync(OrderDetail orderDetail)
         {
-            _context.OrderDetails.Add(orderDetail);
-            await _context.SaveChangesAsync();
+            await _context.OrderDetails.AddAsync(orderDetail);
 
         }
 
-        public async Task UpdateOrderDetailAsync(OrderDetail orderDetail)
+        public Task UpdateOrderDetailAsync(OrderDetail orderDetail)
         {
             _context.Entry(orderDetail).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
-        public async Task DeleteOrderDetailAsync(OrderDetail orderDetail)
+        public Task DeleteOrderDetailAsync(OrderDetail orderDetail)
         {
             _context.OrderDetails.Remove(orderDetail);
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
     }
 }

@@ -7,9 +7,11 @@ namespace MiniCrmApi.Services
     {
         Task<List<Order>> GetAllAsync();
         Task<Order> GetByIdAsync(int id);
-        Task AddAsync(CreateOrderDto order);
-        Task UpdateAsync(int id, Order order);
+        Task<Order> AddAsync(CreateOrderDto order);
+        Task UpdateAsync(int id, UpdateOrderRequestDto orderStatusRequest);
         Task DeleteAsync(int id);
-        Task UpdateOrderTotalPriceAsync(int orderId);
+        Task UpdateOrderTotalPriceAndQuantityAsync(int orderId);
+        List<OrderResponseDto> ChangeOrdersResponse(List<Order> dbOrders);
+        OrderResponseDto ChangeOrderResponse(Order order);
     }
 }
