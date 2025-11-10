@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MiniCrmApi.Dtos;
 using MiniCrmApi.Models;
 using MiniCrmApi.Services;
 
@@ -18,37 +19,88 @@ namespace MiniCrmApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
-            List<Product> productList = await productService.GetAllProductsAsync();
+            List<Product> dbProductList = await productService.GetAllProductsAsync();
+
+            List<ProductResponseDto> productList = dbProductList.Select(p =>
+                new ProductResponseDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    StockQuantity = p.StockQuantity,
+                    CategoryId = p.CategoryId,
+                }).ToList();
+
             return Ok(productList);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
-            Product product = await productService.GetProductByIdAsync(id);
+            Product dbProduct = await productService.GetProductByIdAsync(id);
+
+            ProductResponseDto product = new ProductResponseDto
+            {
+                Id = dbProduct.Id,
+                Name = dbProduct.Name,
+                Description = dbProduct.Description,
+                Price = dbProduct.Price,
+                StockQuantity = dbProduct.StockQuantity,
+                CategoryId = dbProduct.CategoryId
+            };
+
             return Ok(product);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct([FromBody] Product product)
+        public async Task<IActionResult> AddProduct([FromBody] ProductRequestDto productRequest)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            Product product = new Product
+            {
+                Name = productRequest.Name,
+                Description = productRequest.Description,
+                Price = productRequest.Price,
+                StockQuantity = productRequest.StockQuantity,
+                CategoryId = productRequest.CategoryId
+            };
 
             await productService.AddProductAsync(product);
 
-            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+            ProductResponseDto productResponse = new ProductResponseDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                StockQuantity = product.StockQuantity,
+                CategoryId = product.CategoryId
+            };
+
+            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, productResponse);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductRequestDto productRequest)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            Product product = new Product
+            {
+                Name = productRequest.Name,
+                Description = productRequest.Description,
+                Price = productRequest.Price,
+                StockQuantity = productRequest.StockQuantity,
+                CategoryId = productRequest.CategoryId
+            };
 
             await productService.UpdateProductAsync(id, product);
 

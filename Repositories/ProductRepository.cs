@@ -27,20 +27,19 @@ namespace MiniCrmApi.Repositories
 
         public async Task AddProductAsync(Product product)
         {
-            context.Products.Add(product);
-            await context.SaveChangesAsync();
+            await context.Products.AddAsync(product);
         }
 
-        public async Task UpdateProductAsync(Product product)
+        public Task UpdateProductAsync(Product product)
         {
             context.Products.Update(product);
-            await context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
-        public async Task DeleteProductAsync(Product product)
+        public Task DeleteProductAsync(Product product)
         {
             context.Products.Remove(product);
-            await context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
     }
 }

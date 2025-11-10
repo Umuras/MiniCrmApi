@@ -1,4 +1,6 @@
-﻿using MiniCrmApi.Models;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using MiniCrmApi.Data;
+using MiniCrmApi.Models;
 using MiniCrmApi.Repositories;
 
 namespace MiniCrmApi.Services
@@ -7,11 +9,13 @@ namespace MiniCrmApi.Services
     {
         private readonly IProductRepository productRepository;
         private readonly ICategoryService categoryService;
+        private readonly MiniCrmContext context;
 
-        public ProductService(IProductRepository productRepository, ICategoryService categoryService)
+        public ProductService(IProductRepository productRepository, ICategoryService categoryService, MiniCrmContext context)
         {
             this.productRepository = productRepository;
             this.categoryService = categoryService;
+            this.context = context;
         }
 
         public async Task<List<Product>> GetAllProductsAsync()
@@ -24,7 +28,7 @@ namespace MiniCrmApi.Services
         {
             Product product = await productRepository.GetProductByIdAsync(id);
 
-            if(product == null)
+            if (product == null)
             {
                 throw new KeyNotFoundException($"There isn't product with this id:{id}");
             }
@@ -34,14 +38,27 @@ namespace MiniCrmApi.Services
 
         public async Task AddProductAsync(Product product)
         {
-            if(product == null)
+            if (product == null)
             {
                 throw new ArgumentNullException(nameof(product), "Product cannot be null");
             }
 
             await categoryService.GetCategoryByIdAsync(product.CategoryId);
 
-            await productRepository.AddProductAsync(product);
+            using IDbContextTransaction transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                await productRepository.AddProductAsync(product);
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
         }
 
         public async Task UpdateProductAsync(int id, Product product)
@@ -53,7 +70,7 @@ namespace MiniCrmApi.Services
 
             Product dbProduct = await GetProductByIdAsync(id);
 
-            if (product.Name != null)
+            if (product.Name != null && product.Name != string.Empty)
             {
                 dbProduct.Name = product.Name;
             }
@@ -67,10 +84,18 @@ namespace MiniCrmApi.Services
             {
                 dbProduct.StockQuantity = product.StockQuantity;
             }
+            else
+            {
+                throw new ArgumentException("Stock quantity cannot be negative");
+            }
 
             if (product.Price >= 0)
             {
                 dbProduct.Price = product.Price;
+            }
+            else
+            {
+                throw new ArgumentException("Price quantity cannot be negative");
             }
 
             if (product.CategoryId > 0)
@@ -79,13 +104,39 @@ namespace MiniCrmApi.Services
                 dbProduct.CategoryId = product.CategoryId;
             }
 
-            await productRepository.UpdateProductAsync(dbProduct);
+            using IDbContextTransaction transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                await productRepository.UpdateProductAsync(dbProduct);
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
         }
 
         public async Task DeleteProductAsync(int id)
         {
             Product product = await GetProductByIdAsync(id);
-            await productRepository.DeleteProductAsync(product);
+
+            using IDbContextTransaction transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                await productRepository.DeleteProductAsync(product);
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }

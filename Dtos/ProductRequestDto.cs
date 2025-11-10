@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MiniCrmApi.Models
+namespace MiniCrmApi.Dtos
 {
-    public class Product
+    public record ProductRequestDto
     {
-        [Key]
-        public int Id { get; set; }
         [Required(ErrorMessage = "Name isn't empty.")]
         [StringLength(30, MinimumLength = 3, ErrorMessage = "Name length is between 3 to 30")]
         public string Name { get; set; } = string.Empty;
@@ -15,13 +13,7 @@ namespace MiniCrmApi.Models
         public int StockQuantity { get; set; }
         [Required(ErrorMessage = "Price is required")]
         public decimal Price { get; set; }
-
-        //Foreign Key
+        [Range(1, int.MaxValue, ErrorMessage = "CategoryId must be greater than 0")]
         public int CategoryId { get; set; }
-        
-        //Navigation Property
-        public Category? Category { get; set; }
-
-        public List<OrderDetail> OrderDetails { get; set; } = new();
     }
 }
