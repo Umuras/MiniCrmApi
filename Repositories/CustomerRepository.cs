@@ -47,25 +47,22 @@ namespace MiniCrmApi.Repositories
         public async Task AddAsync(Customer customer)
         {
             // EF Core, Customers tablosuna yeni kayıt ekleyecegimizi anlar.
-            _context.Customers.Add(customer);
-            // Veritabanına fiziksel olarak kaydeder.
-            await _context.SaveChangesAsync();
+            await _context.Customers.AddAsync(customer);
         }
 
         // Mevcut bir Customer kaydını günceller.
-        public async Task UpdateAsync(Customer customer)
+        public Task UpdateAsync(Customer customer)
         {
             // EF Core, verilen entity’nin degistigini isaretler.
             _context.Customers.Update(customer);
-            // Degisiklikleri veritabanına yazar.
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
         // Customer kaydini siler.
-        public async Task DeleteAsync(Customer customer)
+        public Task DeleteAsync(Customer customer)
         {
             _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }  
     }
 }

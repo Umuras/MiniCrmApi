@@ -1,4 +1,6 @@
-﻿using MiniCrmApi.Models;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using MiniCrmApi.Data;
+using MiniCrmApi.Models;
 using MiniCrmApi.Repositories;
 
 namespace MiniCrmApi.Services
@@ -6,10 +8,12 @@ namespace MiniCrmApi.Services
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository customerRepository;
+        private readonly MiniCrmContext context;
 
-        public CustomerService(ICustomerRepository customerRepository)
+        public CustomerService(ICustomerRepository customerRepository, MiniCrmContext context)
         {
             this.customerRepository = customerRepository;
+            this.context = context;
         }
 
         public async Task<List<Customer>> GetAllAsync()
@@ -35,7 +39,21 @@ namespace MiniCrmApi.Services
             {
                 throw new ArgumentNullException("Customer doesn't null");
             }
-            await customerRepository.AddAsync(customer);
+
+            using IDbContextTransaction transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                await customerRepository.AddAsync(customer);
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
         }
 
         public async Task UpdateAsync(int id, Customer customer)
@@ -47,30 +65,55 @@ namespace MiniCrmApi.Services
                 throw new ArgumentNullException("Customer doesn't null");
             }
 
-            if(customer.Name != null)
+            if(!string.IsNullOrEmpty(customer.Name))
             {
                 dbCustomer.Name = customer.Name;
             }
-            if (customer.Address != null)
+            if (!string.IsNullOrEmpty(customer.Address))
             {
                 dbCustomer.Address = customer.Address;
             }
-            if (customer.City != null)
+            if (!string.IsNullOrEmpty(customer.City))
             {
                 dbCustomer.City = customer.City;
             }
-            if (customer.PhoneNumber != null)
+            if (!string.IsNullOrEmpty(customer.PhoneNumber))
             {
                 dbCustomer.PhoneNumber = customer.PhoneNumber;
             }
 
-            await customerRepository.UpdateAsync(dbCustomer);
+            using IDbContextTransaction transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                await customerRepository.UpdateAsync(dbCustomer);
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task DeleteAsync(int id)
         {
             Customer customer = await GetByIdAsync(id);
-            await customerRepository.DeleteAsync(customer);
+
+            using IDbContextTransaction transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                await customerRepository.DeleteAsync(customer);
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }
